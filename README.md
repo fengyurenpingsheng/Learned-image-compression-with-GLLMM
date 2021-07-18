@@ -36,12 +36,19 @@ and the encoding/decoding network architectures. Various models have been propos
 
 ### Test Usage
 
-* Download the pre-trained [models](https://drive.google.com/open?id=19b92ey1g30R2OvWupekLQNb3TjHs5HLX) (this model is optimized by MS-SSIM using lambda = 14) and unzip it.
+* Download the pre-trained [models](https://pan.baidu.com/s/1VZ8EZZzX8VKJg4auKxVytQ) (The Extraction code is i6p3. These models are optimized by PSNR using lambda = 0.0016(number filters=128)) and lambda = 0.03(number filters=256)).
 
 * Run the following py files can encode or decode the input file. 
 
 ```
-    https://github.com/fengyurenpingsheng/Learned-Image-Compression-with-GMM-and-Attention/blob/master/Encoder_Decoder_cvpr_blocks_leaky_GLLMM_directly_bits_github.py
+   python Encoder_Decoder_cvpr_blocks_leaky_GLLMM_directly_bits_github.py
+   note that:
+   endcoder_main(); // the Encoder code
+   decoder_main();  // the Decoder  code
+   path ='xxx';     // the test image 
+   save_image_name_path=''; // save the bit stream files.
+   num_filters = 128 or 256;  // 128 for low bit rates and 256 for high bit rates.
+   
 ```
 
 
