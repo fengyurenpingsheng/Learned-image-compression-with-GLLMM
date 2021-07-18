@@ -57,7 +57,7 @@ and the encoding/decoding network architectures. Various models have been propos
 
 Comparisons of reconstructed samples are given in the following.
 
-![](https://github.com/fengyurenpingsheng/Learned-image-compression-with-GLLMM/blob/main/Figure/example.png/example.png)
+![](https://github.com/fengyurenpingsheng/Learned-image-compression-with-GLLMM/blob/main/Figure/example.png)
 
 
 ## Evaluation Results
