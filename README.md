@@ -50,12 +50,12 @@ and the encoding/decoding network architectures. Various models have been propos
 
 Comparisons of reconstructed samples are given in the following.
 
-![](https://github.com/fengyurenpingsheng/Learned-Image-Compression-with-GMM-and-Attention/blob/master/figures/example.png)
+![](https://github.com/fengyurenpingsheng/Learned-image-compression-with-GLLMM/blob/main/Figure/example.png/example.png)
 
 
 ## Evaluation Results
 
-![](https://github.com/fengyurenpingsheng/Learned-Image-Compression-with-GMM-and-Attention/blob/master/figures/result.png)
+![](https://github.com/fengyurenpingsheng/Learned-image-compression-with-GLLMM/blob/main/Figure/result.png)
 
 ## Notes
 
