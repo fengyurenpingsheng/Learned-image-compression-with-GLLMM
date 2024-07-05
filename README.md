@@ -69,12 +69,15 @@ Comparisons of reconstructed samples are given in the following.
 
 If you think it is useful for your reseach, please cite our paper. 
 ```
-@misc{fu2021learned,
-      title={Learned Image Compression with Discretized Gaussian-Laplacian-Logistic Mixture Model and Concatenated Residual Modules}, 
-      author={Haisheng Fu and Feng Liang and Jianping Lin and Bing Li and Mohammad Akbari and Jie Liang and Guohe Zhang and Dong Liu and Chengjie Tu and Jingning Han},
-      year={2021},
-      eprint={2107.06463},
-      archivePrefix={arXiv},
-      primaryClass={eess.IV}
-}
+
+@ARTICLE{Fu_2023,
+  author={Fu, Haisheng and Liang, Feng and Lin, Jianping and Li, Bing and Akbari, Mohammad and Liang, Jie and Zhang, Guohe and Liu, Dong and Tu, Chengjie and Han, Jingning},
+  journal={IEEE Transactions on Image Processing}, 
+  title={Learned Image Compression With Gaussian-Laplacian-Logistic Mixture Model and Concatenated Residual Modules}, 
+  year={2023},
+  volume={32},
+  number={},
+  pages={2063-2076},
+ }
+
 ```
