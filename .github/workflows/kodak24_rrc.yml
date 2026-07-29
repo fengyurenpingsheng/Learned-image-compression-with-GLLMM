@@ -1,0 +1,22 @@
+name: Kodak24 RRC benchmark
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  benchmark:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install codecs
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libjxl-tools webp python3-pip
+          python3 -m pip install --break-system-packages numpy pillow
+      - name: Run complete Kodak-24 benchmark
+        run: python3 experiments/kodak24_rrc_benchmark.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kodak24-rrc-results
+          path: experiments/kodak24_rrc_results/
