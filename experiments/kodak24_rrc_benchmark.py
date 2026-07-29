@@ -1,17 +1,25 @@
 #!/usr/bin/env python3
-import csv, json, math, os, pathlib, shutil, struct, subprocess, tempfile, time, urllib.request, zlib
+import csv, json, pathlib, struct, subprocess, tempfile, time, urllib.request, zlib
 import numpy as np
 from PIL import Image
 
 ROOT=pathlib.Path(__file__).resolve().parent
 DATA=ROOT/'kodak24'; OUT=ROOT/'kodak24_rrc_results'; DATA.mkdir(exist_ok=True); OUT.mkdir(exist_ok=True)
-URL='https://raw.githubusercontent.com/MohamedBakrAli/Kodak-Lossless-True-Color-Image-Suite/master/PhotoCD_PCD0992/{:d}.png'
+URLS=(
+ 'https://r0k.us/graphics/kodak/kodak/kodim{:02d}.png',
+ 'http://r0k.us/graphics/kodak/kodak/kodim{:02d}.png',
+)
 TRANSFORMS=list(range(5))
 
 def get_data():
   for i in range(1,25):
     p=DATA/f'kodim{i:02d}.png'
-    if not p.exists(): urllib.request.urlretrieve(URL.format(i),p)
+    if p.exists(): continue
+    error=None
+    for u in URLS:
+      try: urllib.request.urlretrieve(u.format(i),p); error=None; break
+      except Exception as e: error=e
+    if error is not None: raise error
 
 def entropy(a):
   h=np.bincount(a.ravel(),minlength=256); p=h[h>0]/a.size
@@ -45,7 +53,7 @@ def local_transform(x,bs):
       blk=x[yy:min(h,yy+bs),xx:min(w,xx+bs)]
       best=min(TRANSFORMS,key=lambda t: sum(entropy(fwd_block(blk,t)[...,c]) for c in range(3)))
       y[yy:min(h,yy+bs),xx:min(w,xx+bs)]=fwd_block(blk,best); ids.append(best)
-  raw=bytes(ids); side=struct.pack('<HHH',bs,h,w)+zlib.compress(raw,9)
+  side=struct.pack('<HHH',bs,h,w)+zlib.compress(bytes(ids),9)
   return y,side
 
 def local_inverse(y,side):
@@ -59,7 +67,7 @@ def run(cmd): subprocess.run(cmd,check=True,stdout=subprocess.DEVNULL,stderr=sub
 def encode_jxl(a,effort=9):
   with tempfile.TemporaryDirectory() as td:
     td=pathlib.Path(td); png=td/'a.png'; out=td/'a.jxl'; Image.fromarray(a).save(png)
-    run(['cjxl',str(png),str(out),'--lossless_jpeg=0','-d','0','-e',str(effort),'--num_threads=1'])
+    run(['cjxl',str(png),str(out),'-d','0','-e',str(effort),'--num_threads=1'])
     return out.read_bytes()
 def decode_jxl(payload):
   with tempfile.TemporaryDirectory() as td:
@@ -94,10 +102,10 @@ def bench():
         rec=rec_car if name.startswith('raw-') else inv(rec_car,side)
         err=int(np.abs(src.astype(np.int16)-rec.astype(np.int16)).max()); exact=bool(np.array_equal(target,rec))
         if not exact or err>E: raise RuntimeError((idx,E,name,err,exact))
-        allc.append((total,name,time.time()-t,len(side),len(payload)))
-        if best is None or total<best[0]: best=(total,name,time.time()-t,len(side),len(payload))
+        item=(total,name,time.time()-t,len(side),len(payload)); allc.append(item)
+        if best is None or item<best: best=item
       base=next(v for v in allc if v[1]=='raw-jxl')
-      row={'image':f'kodim{idx:02d}','E':E,'pixels':n,'raw_jxl_bytes':base[0],'best_bytes':best[0],'raw_jxl_bpsp':8*base[0]/(3*n),'best_bpsp':8*best[0]/(3*n),'saving_vs_raw_jxl_pct':100*(base[0]-best[0])/base[0],'selected':best[1],'side_bytes':best[3],'payload_bytes':best[4],'max_error':E if E else 0}
+      row={'image':f'kodim{idx:02d}','E':E,'pixels':n,'raw_jxl_bytes':base[0],'best_bytes':best[0],'raw_jxl_bpsp':8*base[0]/(3*n),'best_bpsp':8*best[0]/(3*n),'saving_vs_raw_jxl_pct':100*(base[0]-best[0])/base[0],'selected':best[1],'side_bytes':best[3],'payload_bytes':best[4],'max_error':err}
       rows.append(row); print(row,flush=True)
   with open(OUT/'kodak24_results.csv','w',newline='') as f: w=csv.DictWriter(f,fieldnames=rows[0]);w.writeheader();w.writerows(rows)
   summary={}
