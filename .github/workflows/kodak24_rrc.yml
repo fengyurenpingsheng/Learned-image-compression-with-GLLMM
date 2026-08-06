@@ -1,0 +1,29 @@
+name: Kodak24 RRC benchmark
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  benchmark:
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0,1,2,3,4,5,6,7]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      SHARD_INDEX: ${{ matrix.shard }}
+      NUM_SHARDS: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install codecs
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libjxl-tools webp python3-pip
+          python3 -m pip install --break-system-packages numpy pillow
+      - name: Run Kodak-24 shard
+        run: python3 experiments/kodak24_rrc_benchmark.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kodak24-rrc-results-shard-${{ matrix.shard }}
+          path: experiments/kodak24_rrc_results/shard_${{ matrix.shard }}/
